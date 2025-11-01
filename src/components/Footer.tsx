@@ -27,7 +27,7 @@ const Footer = () => {
             viewport={{ once: true }}
           >
             <a href="#" className="text-2xl font-bold gradient-text">
-              Rohit.ai
+              Rohit Sundaram
             </a>
             <p className="text-sm text-muted-foreground mt-2">
               Building next-gen GenAI systems

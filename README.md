@@ -1,73 +1,111 @@
-# Welcome to your Lovable project
+# Rohit Sundaram - Portfolio Website
 
-## Project info
+A modern portfolio website showcasing AI engineering expertise, services, and projects. Built with React, TypeScript, and Tailwind CSS.
 
-**URL**: https://lovable.dev/projects/814cd6db-973b-4f74-9460-154f28436454
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/814cd6db-973b-4f74-9460-154f28436454) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
+## 🚀 Tech Stack
 
 This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Vite** - Fast build tool and dev server
+- **React 18** - UI library
+- **TypeScript** - Type safety
+- **shadcn-ui** - UI component library
+- **Tailwind CSS** - Utility-first CSS framework
+- **Framer Motion** - Animation library
+- **React Router** - Client-side routing
 
-## How can I deploy this project?
+## 📦 Installation
 
-Simply open [Lovable](https://lovable.dev/projects/814cd6db-973b-4f74-9460-154f28436454) and click on Share -> Publish.
+### Prerequisites
 
-## Can I connect a custom domain to my Lovable project?
+- Node.js 18+ (install with [nvm](https://github.com/nvm-sh/nvm#installing-and-updating))
+- npm or yarn
 
-Yes, you can!
+### Setup
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```sh
+# Step 1: Clone the repository
+git clone <YOUR_GIT_URL>
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+# Step 2: Navigate to the project directory
+cd rohits-ai-verse
+
+# Step 3: Install dependencies
+npm install
+
+# Step 4: Start the development server
+npm run dev
+```
+
+The app will be available at `http://localhost:8080`
+
+## 📜 Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+## 🏗️ Project Structure
+
+```
+src/
+├── components/      # React components
+│   ├── ui/         # shadcn-ui components
+│   └── ...         # Feature components
+├── pages/          # Page components
+├── hooks/          # Custom React hooks
+├── lib/            # Utility functions
+└── main.tsx        # Entry point
+```
+
+## 🌐 Deployment
+
+### GitHub Pages (Recommended & Free)
+
+This project is configured for automatic deployment to GitHub Pages using GitHub Actions.
+
+#### Setup Steps:
+
+1. **Push your code to GitHub**
+   ```sh
+   git add .
+   git commit -m "Setup GitHub Pages deployment"
+   git push origin main
+   ```
+
+2. **Enable GitHub Pages in your repository:**
+   - Go to your repository on GitHub
+   - Click **Settings** → **Pages**
+   - Under **Source**, select **GitHub Actions**
+   - Save the settings
+
+3. **Update base path (if needed):**
+   - If your repo is `username.github.io`, the base path is automatically set to `/`
+   - If your repo is a project repo (e.g., `username/rohits-ai-verse`), the base path is automatically set to `/rohits-ai-verse/`
+   - You can update `REPO_NAME` in `vite.config.ts` if your repo name is different
+
+4. **Automatic Deployment:**
+   - Every push to the `main` branch will automatically trigger a build and deployment
+   - Your site will be available at: `https://username.github.io/repo-name/`
+
+#### Custom Domain (Optional):
+
+To use `rohitsundaram.com`:
+1. Add a `CNAME` file in the `public/` folder with your domain: `rohitsundaram.com`
+2. Configure DNS records in your domain registrar to point to GitHub Pages
+3. Enable the custom domain in GitHub repository settings
+
+### Other Options
+
+- **AWS (S3 + CloudFront)**: Upload `dist/` folder to S3, configure CloudFront, set up Route 53
+- **Vercel**: Connect GitHub repo for automatic deployments
+- **Netlify**: Drag & drop `dist/` folder or connect repo
+
+## 📝 Contact Form
+
+The contact form uses Formspree for email delivery. Configure your Formspree endpoint in `src/components/Contact.tsx`.
+
+## 📄 License
+
+© 2025 Rohit Sundaram. All rights reserved.

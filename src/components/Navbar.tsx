@@ -47,7 +47,7 @@ const Navbar = () => {
             className="text-2xl font-bold gradient-text"
             whileHover={{ scale: 1.05 }}
           >
-            Rohit.ai
+            Rohit Sundaram
           </motion.a>
 
           {/* Desktop Menu */}
