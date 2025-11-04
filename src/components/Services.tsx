@@ -7,25 +7,25 @@ const Services = () => {
     {
       icon: MessageSquare,
       title: 'Conversational AI & Agents',
-      description: 'Multi-agent chatbots with CrewAI and LangChain for intelligent task orchestration and autonomous decision-making.',
+      description: 'I build intelligent chatbots and multi-agent systems that can handle customer queries, automate tasks, and make decisions autonomously. Whether you need a customer support bot or a complex multi-agent workflow, I can create it using CrewAI and LangChain.',
       features: ['Multi-Agent Systems', 'Context-Aware Responses', 'Task Automation'],
     },
     {
       icon: Database,
       title: 'RAG Systems & Vector DBs',
-      description: 'Enterprise-grade Retrieval-Augmented Generation with PGVector, LlamaIndex, and semantic search capabilities.',
+      description: 'I develop custom RAG (Retrieval-Augmented Generation) systems that let your AI access and use your own documents and data. Perfect for building knowledge bases, document Q&A systems, or AI assistants that know your business. I use PGVector, LlamaIndex, and semantic search to make it work seamlessly.',
       features: ['Semantic Search', 'Document Processing', 'Knowledge Graphs'],
     },
     {
       icon: Zap,
       title: 'Inference Optimization',
-      description: 'Model optimization with OpenVINO for faster inference, reduced latency, and efficient resource utilization.',
+      description: 'I optimize your AI models to run faster and cheaper without losing accuracy. Using OpenVINO and other optimization techniques, I can reduce your inference costs and latency, making your AI applications more efficient and cost-effective.',
       features: ['Model Quantization', 'Hardware Acceleration', 'Performance Tuning'],
     },
     {
       icon: Cloud,
       title: 'Deployments & DevOps',
-      description: 'Production-ready deployments with Docker, ECS, and CI/CD pipelines ensuring 99.9% uptime and scalability.',
+      description: 'I take your AI projects from prototype to production with reliable, scalable deployments. I set up Docker containers, CI/CD pipelines, and cloud infrastructure (AWS ECS, etc.) so your AI systems run smoothly with high uptime and can grow with your business.',
       features: ['Container Orchestration', 'Auto-scaling', 'Monitoring & Observability'],
     },
   ];
@@ -42,7 +42,7 @@ const Services = () => {
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4">Services</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            End-to-end AI solutions from concept to production
+            Let's build your AI solution together - from concept to production
           </p>
         </motion.div>
 

@@ -2,10 +2,10 @@ import { motion } from 'framer-motion';
 
 const Footer = () => {
   const links = [
+    { label: 'About', href: '#about' },
     { label: 'Services', href: '#services' },
     { label: 'Work', href: '#work' },
     { label: 'Process', href: '#process' },
-    { label: 'Testimonials', href: '#testimonials' },
     { label: 'Contact', href: '#contact' },
   ];
 

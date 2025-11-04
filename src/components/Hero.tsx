@@ -82,7 +82,7 @@ const Hero = () => {
             className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto"
           >
             {[
-              { label: 'Years Experience', value: '5+' },
+              { label: 'Years Experience', value: '7' },
               { label: 'Projects Delivered', value: '20+' },
               { label: 'Uptime Achieved', value: '99.9%' },
               { label: 'Response Time', value: '<1.5s' },

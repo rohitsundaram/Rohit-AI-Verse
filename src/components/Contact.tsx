@@ -36,11 +36,11 @@ const Contact = () => {
       });
 
       if (response.ok) {
-        toast({
-          title: 'Message Sent!',
-          description: "Thank you for reaching out. I'll get back to you soon.",
-        });
-        setFormData({ name: '', email: '', message: '' });
+    toast({
+      title: 'Message Sent!',
+      description: "Thank you for reaching out. I'll get back to you soon.",
+    });
+    setFormData({ name: '', email: '', message: '' });
       } else {
         throw new Error('Failed to send message');
       }

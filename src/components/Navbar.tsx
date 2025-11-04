@@ -8,10 +8,10 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const menuItems = [
+    { label: 'About', href: '#about' },
     { label: 'Services', href: '#services' },
     { label: 'Work', href: '#work' },
     { label: 'Process', href: '#process' },
-    { label: 'Testimonials', href: '#testimonials' },
     { label: 'Contact', href: '#contact' },
   ];
 

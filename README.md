@@ -61,50 +61,37 @@ src/
 
 ## 🌐 Deployment
 
-### GitHub Pages (Recommended & Free)
+### Build for Production
 
-This project is configured for automatic deployment to GitHub Pages using GitHub Actions.
+```sh
+npm run build
+```
 
-#### Setup Steps:
+The built files will be in the `dist/` folder.
 
-1. **Push your code to GitHub**
-   ```sh
-   git add .
-   git commit -m "Setup GitHub Pages deployment"
-   git push origin main
-   ```
-
-2. **Enable GitHub Pages in your repository:**
-   - Go to your repository on GitHub
-   - Click **Settings** → **Pages**
-   - Under **Source**, select **GitHub Actions**
-   - Save the settings
-
-3. **Update base path (if needed):**
-   - If your repo is `username.github.io`, the base path is automatically set to `/`
-   - If your repo is a project repo (e.g., `username/rohits-ai-verse`), the base path is automatically set to `/rohits-ai-verse/`
-   - You can update `REPO_NAME` in `vite.config.ts` if your repo name is different
-
-4. **Automatic Deployment:**
-   - Every push to the `main` branch will automatically trigger a build and deployment
-   - Your site will be available at: `https://username.github.io/repo-name/`
-
-#### Custom Domain (Optional):
-
-To use `rohitsundaram.com`:
-1. Add a `CNAME` file in the `public/` folder with your domain: `rohitsundaram.com`
-2. Configure DNS records in your domain registrar to point to GitHub Pages
-3. Enable the custom domain in GitHub repository settings
-
-### Other Options
+### Deployment Options
 
 - **AWS (S3 + CloudFront)**: Upload `dist/` folder to S3, configure CloudFront, set up Route 53
 - **Vercel**: Connect GitHub repo for automatic deployments
 - **Netlify**: Drag & drop `dist/` folder or connect repo
+- **Other hosting providers**: Upload the `dist/` folder contents to your hosting provider
 
 ## 📝 Contact Form
 
 The contact form uses Formspree for email delivery. Configure your Formspree endpoint in `src/components/Contact.tsx`.
+
+## 🤖 Chatbot Features
+
+The chatbot provides intelligent conversations about projects and services using a knowledge base built from GitHub repositories.
+
+### Chatbot Capabilities
+
+- **Project Information:** Answers detailed questions about all projects including architecture, tech stack, and features
+- **Service Details:** Explains services offered with technical details
+- **Skills & Expertise:** Lists technologies and skills based on project work
+- **GitHub Links:** Provides direct links to project repositories
+- **Meeting Scheduling:** When unable to answer a question, suggests scheduling a meeting with Rohit and shows a meeting request form
+- **Knowledge Base:** Built from GitHub repositories for accurate, up-to-date information
 
 ## 📄 License
 
