@@ -14,6 +14,7 @@ interface Message {
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showExpandedButton, setShowExpandedButton] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -26,6 +27,8 @@ const Chatbot = () => {
   const [showScheduleForm, setShowScheduleForm] = useState(false);
   const [isSubmittingMeeting, setIsSubmittingMeeting] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mblgnozn';
 
@@ -33,11 +36,94 @@ const Chatbot = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Create a simple beep sound using Web Audio API
+  const playPopSound = async () => {
+    try {
+      // Use existing audio context or create new one
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+
+      const audioContext = audioContextRef.current;
+      
+      // Try to resume if suspended
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.value = 800;
+      oscillator.type = 'sine';
+
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.2);
+    } catch (error) {
+      console.log('Could not play beep sound:', error);
+    }
+  };
+
   useEffect(() => {
     if (isOpen) {
       scrollToBottom();
     }
   }, [messages, isOpen]);
+
+  // Unlock audio on any user interaction
+  useEffect(() => {
+    const handleInteraction = async () => {
+      // Create and resume audio context on first interaction
+      try {
+        if (!audioContextRef.current) {
+          audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+        }
+        if (audioContextRef.current.state === 'suspended') {
+          await audioContextRef.current.resume();
+        }
+      } catch (e) {
+        // Ignore errors
+      }
+    };
+
+    // Listen for any user interaction to unlock audio
+    const events = ['click', 'touchstart', 'keydown', 'mousedown', 'scroll'];
+    events.forEach(event => {
+      document.addEventListener(event, handleInteraction, { once: true, passive: true });
+    });
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, handleInteraction);
+      });
+    };
+  }, []);
+
+  // Expand button with message after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowExpandedButton(true);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Play sound when button expands
+  useEffect(() => {
+    if (showExpandedButton) {
+      // Small delay to sync with animation
+      const soundTimer = setTimeout(() => {
+        playPopSound();
+      }, 100);
+      return () => clearTimeout(soundTimer);
+    }
+  }, [showExpandedButton]);
 
   // Enhanced Knowledge base for projects from GitHub repositories
   const projects = [
@@ -390,14 +476,29 @@ const Chatbot = () => {
       {!isOpen && (
         <motion.button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 px-6 py-4 rounded-full gradient-primary text-white shadow-lg hover:shadow-xl transition-all flex items-center gap-3 max-w-sm"
+          className={`fixed bottom-6 right-6 z-50 rounded-full gradient-primary text-white shadow-lg hover:shadow-xl flex items-center gap-3 overflow-hidden ${
+            showExpandedButton ? 'px-6 py-4' : 'w-14 h-14 justify-center'
+          }`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
           <MessageCircle className="w-5 h-5 flex-shrink-0" />
-          <span className="text-sm font-medium">Hi how are you doing, want to talk to virtual Rohit</span>
+          <AnimatePresence>
+            {showExpandedButton && (
+              <motion.span
+                initial={{ opacity: 0, width: 0, marginLeft: 0 }}
+                animate={{ opacity: 1, width: 'auto', marginLeft: 12 }}
+                exit={{ opacity: 0, width: 0, marginLeft: 0 }}
+                transition={{ duration: 0.3 }}
+                className="text-sm font-medium whitespace-nowrap"
+              >
+                Hi! how are you doing!!! want to talk to virtual Rohit?
+              </motion.span>
+            )}
+          </AnimatePresence>
         </motion.button>
       )}
 
