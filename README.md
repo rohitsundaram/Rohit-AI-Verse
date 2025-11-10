@@ -2,6 +2,10 @@
 
 A modern portfolio website showcasing AI engineering expertise, services, and projects. Built with React, TypeScript, and Tailwind CSS.
 
+## Why This Project Matters
+
+This repository is the public entry point to my AI engineering work. It highlights production projects, consulting services, and technical depth in a format that is easy for recruiters and clients to evaluate quickly.
+
 ## 🚀 Tech Stack
 
 This project is built with:
@@ -25,10 +29,10 @@ This project is built with:
 
 ```sh
 # Step 1: Clone the repository
-git clone <YOUR_GIT_URL>
+git clone https://github.com/rohitsundaram/Rohit-AI-Verse.git
 
 # Step 2: Navigate to the project directory
-cd rohits-ai-verse
+cd Rohit-AI-Verse
 
 # Step 3: Install dependencies
 npm install
@@ -38,6 +42,10 @@ npm run dev
 ```
 
 The app will be available at `http://localhost:8080`
+
+## 🌐 Live Demo
+
+Portfolio: https://rohitsundaram.com
 
 ## 📜 Available Scripts
 
@@ -95,4 +103,4 @@ The chatbot provides intelligent conversations about projects and services using
 
 ## 📄 License
 
-© 2025 Rohit Sundaram. All rights reserved.
+MIT License. See `LICENSE` for details.
