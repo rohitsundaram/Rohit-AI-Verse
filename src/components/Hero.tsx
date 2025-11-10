@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles, Award } from 'lucide-react';
 
 const Hero = () => {
   const scrollToSection = (href: string) => {
@@ -25,10 +25,16 @@ const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20"
+            className="mb-6 flex flex-wrap items-center justify-center gap-3"
           >
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">AI Engineer in Dubai</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-primary">AI Engineer in Dubai</span>
+            </div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/10 border border-yellow-500/20">
+              <Award className="w-4 h-4 text-yellow-600" />
+              <span className="text-sm font-medium text-yellow-600">IBM Entrepreneur Award 2025</span>
+            </div>
           </motion.div>
 
           <motion.h1
@@ -47,7 +53,7 @@ const Hero = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto"
           >
-            AI Engineer | GenAI | Model Optimization | Multi-Agent Systems
+            Dubai-based Gen AI Engineer helping startups build RAG chatbots, AI assistants, and automate workflows.
           </motion.p>
 
           <motion.div
@@ -58,19 +64,19 @@ const Hero = () => {
           >
             <Button
               size="lg"
-              onClick={() => scrollToSection('#work')}
+              onClick={() => window.open('https://calendly.com/rohitsundaram-95/30min', '_blank')}
               className="gradient-primary text-primary-foreground text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all"
             >
-              See Work
+              Book a Free 15-min AI Strategy Call
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
             <Button
               size="lg"
               variant="outline"
-              onClick={() => scrollToSection('#contact')}
+              onClick={() => scrollToSection('#work')}
               className="text-lg px-8 py-6 border-2 hover:bg-secondary"
             >
-              Let's Talk
+              See Work
             </Button>
           </motion.div>
 

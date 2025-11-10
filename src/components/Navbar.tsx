@@ -10,8 +10,10 @@ const Navbar = () => {
   const menuItems = [
     { label: 'About', href: '#about' },
     { label: 'Services', href: '#services' },
+    { label: 'Demos', href: '#demos' },
+    { label: 'Case Studies', href: '#case-studies' },
+    { label: 'Pricing', href: '#pricing' },
     { label: 'Work', href: '#work' },
-    { label: 'Process', href: '#process' },
     { label: 'Contact', href: '#contact' },
   ];
 
@@ -62,10 +64,10 @@ const Navbar = () => {
               </button>
             ))}
             <Button
-              onClick={() => scrollToSection('#contact')}
-              className="gradient-primary text-primary-foreground"
+              onClick={() => window.open('https://calendly.com/rohitsundaram-95/30min', '_blank')}
+              className="gradient-primary text-primary-foreground whitespace-nowrap"
             >
-              Let's Talk
+              Book Free Call
             </Button>
           </div>
 
@@ -97,10 +99,10 @@ const Navbar = () => {
                 </button>
               ))}
               <Button
-                onClick={() => scrollToSection('#contact')}
+                onClick={() => window.open('https://calendly.com/rohitsundaram-95/30min', '_blank')}
                 className="w-full gradient-primary text-primary-foreground"
               >
-                Let's Talk
+                Book Free 15-min Call
               </Button>
             </motion.div>
           )}

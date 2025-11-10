@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Document Q&A RAG System — Case Study (Print‑Ready)</title>
+  <!--
+    Notes:
+    - This file includes a dedicated print stylesheet to produce a crisp, A4 PDF from the browser's Print dialog.
+    - Use Chrome/Edge print with: Layout = Portrait, Paper size = A4, Margins = Default (or None, we set @page),
+      Options: enable "Background graphics" for exact brand colors.
+  -->
+  <style>
+    /* ---------- Base / Screen Styles ---------- */
+    :root {
+      --brand: #047857;          /* emerald-800 */
+      --brand-2: #10b981;        /* emerald-500 */
+      --brand-3: #14b8a6;        /* teal-500 */
+      --ink: #1f2937;            /* gray-800 */
+      --muted: #64748b;          /* slate-500 */
+      --rule: #e5e7eb;           /* gray-200 */
+      --rule-2: #d1fae5;         /* emerald-100 */
+      --bg: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.55;
+      color: var(--ink);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+      padding-bottom: 16px;
+      border-bottom: 3px solid var(--brand-2);
+      page-break-inside: avoid;
+    }
+    .header h1 {
+      color: var(--brand);
+      font-size: 32px;
+      line-height: 1.2;
+      margin: 0 0 8px;
+    }
+    .header .client {
+      color: var(--muted);
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .section { margin: 24px 0 28px; }
+
+    .section h2 {
+      color: var(--brand);
+      font-size: 24px;
+      margin: 0 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--rule-2);
+      page-break-after: avoid;
+    }
+
+    .section h3 {
+      color: var(--brand);
+      font-size: 20px;
+      margin: 18px 0 8px;
+      font-weight: 700;
+      page-break-after: avoid;
+    }
+
+    .section p {
+      margin: 0 0 12px;
+      font-size: 16px;
+      text-align: justify;
+    }
+
+    .section ul { margin: 8px 0 16px 20px; }
+    .section ul li { margin: 6px 0; }
+
+    .results {
+      background: linear-gradient(135deg, var(--brand-2), var(--brand-3));
+      color: #fff;
+      padding: 20px 20px 8px;
+      border-radius: 12px;
+      margin: 24px 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      page-break-inside: avoid;
+    }
+
+    .results h3 {
+      font-size: 22px;
+      margin: 0 0 12px;
+    }
+
+    .metric { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.2); }
+    .metric:last-child { border-bottom: 0; }
+    .metric-label { font-size: 16px; }
+    .metric-value { font-size: 26px; font-weight: 800; }
+
+    .features ul, .tech ul { list-style: none; padding-left: 0; margin-left: 0; }
+    .features li, .tech li { padding: 6px 0 6px 26px; position: relative; }
+    .features li::before {
+      content: "✓";
+      position: absolute; left: 0; top: 0; font-weight: 800; color: var(--brand-2);
+    }
+    .tech li::before {
+      content: "•";
+      position: absolute; left: 0; top: 0; font-weight: 800; color: var(--brand-2);
+    }
+
+    .footer {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 2px solid var(--rule);
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      page-break-inside: avoid;
+    }
+    .footer a { color: var(--brand-2); text-decoration: none; }
+
+    /* Optional on-screen print button (hidden in print) */
+    .toolbar { position: sticky; top: 0; background: #fff; border-bottom: 1px solid var(--rule); padding: 8px 0; margin-bottom: 8px; display: flex; justify-content: flex-end; }
+    .btn-print {
+      appearance: none; border: 1px solid var(--brand-2); background: #fff; color: var(--brand);
+      border-radius: 8px; padding: 8px 12px; font-weight: 600; cursor: pointer;
+    }
+    .btn-print:hover { background: #f0fdf4; }
+
+    /* ---------- Print Styles ---------- */
+    @media print {
+      /* 1) Page setup */
+      @page { size: A4; margin: 18mm 15mm; }
+
+      /* 2) Reset layout to full width for print */
+      .container { max-width: none; padding: 0; }
+
+      /* 3) Ensure colors and gradients are preserved in print in compatible browsers */
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+      /* 4) Control page breaks for tidy sections */
+      .section, .results, .header, .footer { break-inside: avoid; page-break-inside: avoid; }
+      h1, h2, h3 { break-after: avoid-page; }
+
+      /* 5) Links appear as normal text (cleaner PDFs) */
+      a { color: inherit; text-decoration: none; }
+
+      /* 6) Hide the on-screen toolbar */
+      .toolbar { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="toolbar">
+      <button class="btn-print" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+
+    <header class="header">
+      <h1>Document Q&A RAG System</h1>
+      <div class="client">Case Study: Legal Tech Firm</div>
+    </header>
+
+    <section class="section">
+      <h2>Problem</h2>
+      <p>The legal tech firm was facing critical challenges in document research and information retrieval that were significantly impacting their operational efficiency and client service quality.</p>
+
+      <h3>Time-Consuming Manual Research</h3>
+      <p>Lawyers were spending an average of 6–8 hours per case searching through thousands of legal documents, case files, and precedents. The firm maintained a repository of over 10,000 legal documents including case law, contracts, legal opinions, and regulatory filings. Traditional keyword-based search systems were ineffective, often returning hundreds of irrelevant results or missing critical documents due to terminology variations.</p>
+
+      <h3>Accuracy and Consistency Issues</h3>
+      <p>The manual research process led to inconsistent results across different lawyers working on similar cases. Critical precedents were frequently missed, and outdated information was sometimes referenced, potentially impacting case outcomes. The firm estimated that 15–20% of research time was spent verifying information that turned out to be incorrect or outdated.</p>
+
+      <h3>Scalability Challenges</h3>
+      <p>As the firm grew and document volume increased, the research bottleneck became more severe. New lawyers required extensive training to navigate the document repository effectively. The firm was unable to scale their research capabilities without proportionally increasing headcount, leading to rising operational costs.</p>
+
+      <h3>Client Impact</h3>
+      <p>Delayed research processes meant longer response times to client inquiries and slower case preparation. This impacted client satisfaction and the firm's ability to take on additional cases without compromising quality.</p>
+    </section>
+
+    <section class="section">
+      <h2>Solution</h2>
+      <p>We developed a comprehensive RAG (Retrieval‑Augmented Generation) system specifically designed for legal document intelligence, combining advanced AI with domain‑specific legal knowledge processing.</p>
+
+      <h3>Intelligent Document Processing Pipeline</h3>
+      <p>The system implements a sophisticated document ingestion pipeline that processes various legal document formats (PDFs, Word documents, scanned images) and extracts structured information. Using advanced OCR and document parsing techniques, the system identifies key legal concepts, case citations, dates, parties involved, and legal precedents. All documents are automatically categorized by practice area, jurisdiction, and document type.</p>
+
+      <h3>Semantic Search with Vector Embeddings</h3>
+      <p>We implemented a vector database (PGVector) that stores semantic embeddings of all legal documents. Unlike traditional keyword search, the system understands the meaning and context of legal queries. When a lawyer asks “What are the precedents for breach of contract in technology services?”, the system finds relevant cases even if they use different terminology like “service agreement violations” or “tech contract disputes”. The embeddings capture legal relationships, concepts, and context that keyword matching cannot.</p>
+
+      <h3>Context‑Aware Q&amp;A with Citations</h3>
+      <p>The RAG system uses LlamaIndex to create a sophisticated retrieval and generation pipeline. When lawyers ask questions, the system:</p>
+      <ul>
+        <li>Retrieves the most relevant document chunks based on semantic similarity</li>
+        <li>Considers context from multiple related documents</li>
+        <li>Generates comprehensive answers that synthesize information across sources</li>
+        <li>Provides precise citations with page numbers and document references</li>
+        <li>Highlights relevant sections in source documents</li>
+      </ul>
+
+      <h3>Multi‑Document Reasoning</h3>
+      <p>The system can analyze relationships across multiple documents simultaneously. For example, when researching a case, it can identify how a precedent was applied in similar cases, track the evolution of legal interpretations over time, and identify conflicting precedents that require deeper analysis. This multi‑document reasoning capability enables lawyers to build comprehensive legal arguments more efficiently.</p>
+
+      <h3>Secure Access and Compliance</h3>
+      <p>Built with legal industry security standards in mind, the system implements role‑based access controls, ensuring that sensitive client information is only accessible to authorized personnel. All document access is logged for compliance and audit purposes. The system maintains client confidentiality while enabling efficient collaboration within authorized teams.</p>
+
+      <h3>Continuous Learning and Updates</h3>
+      <p>The system automatically indexes new documents as they are added to the repository, keeping the knowledge base current. It can identify when documents have been superseded or updated, alerting users to potential conflicts or outdated information. This ensures that lawyers always have access to the most current legal information.</p>
+    </section>
+
+    <section class="results">
+      <h3>Impact &amp; Results</h3>
+      <div class="metric"><span class="metric-label">Search Time Reduction</span><span class="metric-value">85%</span></div>
+      <div class="metric"><span class="metric-label">Document Coverage</span><span class="metric-value">10K+ docs</span></div>
+      <div class="metric"><span class="metric-label">Answer Accuracy</span><span class="metric-value">96%</span></div>
+    </section>
+
+    <section class="section">
+      <h2>Detailed Impact Analysis</h2>
+      <h3>Time Savings and Productivity</h3>
+      <p>The 85% reduction in search time translates to significant productivity gains. Lawyers who previously spent 6–8 hours on research now complete the same work in 45–60 minutes. This frees up approximately 5–7 hours per case for higher‑value activities such as strategy development, client consultation, and case preparation. For a firm handling 50 cases per month, this represents over 250 hours of saved time monthly.</p>
+
+      <h3>Improved Research Quality</h3>
+      <p>The 96% accuracy rate represents a significant improvement over manual research, which had an estimated accuracy of 75–80% due to human error and missed documents. The system's ability to search across all 10,000+ documents simultaneously ensures comprehensive coverage that was previously impossible. Lawyers report finding relevant precedents and cases they would have missed using traditional methods.</p>
+
+      <h3>Cost Reduction</h3>
+      <p>By reducing research time by 85%, the firm has been able to handle 40% more cases with the same legal team. This has resulted in increased revenue without proportional increases in staffing costs. The firm estimates annual cost savings of approximately $200,000 in reduced overtime and the ability to defer hiring additional research staff.</p>
+
+      <h3>Enhanced Client Service</h3>
+      <p>Faster research capabilities have enabled the firm to respond to client inquiries 3–4 times faster. What previously took 2–3 days now takes 4–6 hours. This improved responsiveness has led to higher client satisfaction scores and has become a competitive differentiator for the firm. Clients appreciate the thoroughness of research, with the comprehensive citation system providing transparency and building trust.</p>
+
+      <h3>Knowledge Democratization</h3>
+      <p>Junior lawyers and new hires can now access the firm's collective knowledge instantly, reducing the learning curve and training time. The system has democratized access to the firm's document repository, ensuring that all lawyers, regardless of seniority, can leverage the full depth of the firm's knowledge base. This has improved the quality of work across all experience levels.</p>
+
+      <h3>Scalability and Growth</h3>
+      <p>The system has enabled the firm to scale operations without proportionally increasing research staff. As document volume grows, the system continues to perform efficiently, maintaining fast query times even as the repository expands. This scalability supports the firm's growth strategy and allows them to take on more complex cases with confidence.</p>
+
+      <h3>Competitive Advantage</h3>
+      <p>The firm has gained a significant competitive advantage through faster case preparation and more thorough research. The ability to quickly identify relevant precedents and build comprehensive legal arguments has improved case outcomes and win rates. The system has become a core differentiator in client pitches and proposals.</p>
+    </section>
+
+    <section class="section">
+      <h2>Key Features</h2>
+      <div class="features">
+        <ul>
+          <li>Intelligent document indexing</li>
+          <li>Context‑aware Q&amp;A with citations</li>
+          <li>Multi‑document reasoning</li>
+          <li>Secure access controls</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Technology Stack</h2>
+      <div class="tech">
+        <ul>
+          <li>LlamaIndex</li>
+          <li>PGVector</li>
+          <li>Document Processing</li>
+          <li>Semantic Search</li>
+          <li>Citation Engine</li>
+        </ul>
+      </div>
+
+
+    <footer class="footer">
+      <p><strong>Rohit Sundaram</strong> — Dubai‑based Gen AI Engineer</p>
+      <p>Website: <a href="https://rohitsundaram.com">rohitsundaram.com</a> | Email: rohitsundaram.95@gmail.com</p>
+      <p>Schedule a call: <a href="https://calendly.com/rohitsundaram-95/30min">calendly.com/rohitsundaram-95/30min</a></p>
+    </footer>
+</section>
+  </div>
+
+</body>
+</html>

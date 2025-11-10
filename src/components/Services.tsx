@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
-import { MessageSquare, Database, Zap, Cloud } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { MessageSquare, Database, Zap, Cloud, GraduationCap, BookOpen, ArrowRight } from 'lucide-react';
 
 const Services = () => {
   const services = [
@@ -28,6 +29,18 @@ const Services = () => {
       description: 'I take your AI projects from prototype to production with reliable, scalable deployments. I set up Docker containers, CI/CD pipelines, and cloud infrastructure (AWS ECS, etc.) so your AI systems run smoothly with high uptime and can grow with your business.',
       features: ['Container Orchestration', 'Auto-scaling', 'Monitoring & Observability'],
     },
+    {
+      icon: BookOpen,
+      title: 'Train Your Team with RAG (No-Code) Development',
+      description: 'Empower your team to build RAG systems independently using no-code platforms. This comprehensive training program teaches your team how to create document Q&A systems, knowledge bases, and AI assistants that can access and use your company documents - all without writing code. Perfect for teams who want to leverage RAG technology quickly.',
+      features: ['No-Code RAG Platforms', 'Document Processing', 'Semantic Search Setup'],
+    },
+    {
+      icon: GraduationCap,
+      title: 'Train Your Team with Agentic AI (No-Code) Development',
+      description: 'Teach your team to build intelligent multi-agent systems using no-code tools. This hands-on training program covers creating autonomous agents, workflow automation, and multi-agent orchestration without coding. Your team will learn to build chatbots, automate complex workflows, and create AI agents that can collaborate and make decisions.',
+      features: ['Multi-Agent Systems', 'Workflow Automation', 'Agent Orchestration'],
+    },
   ];
 
   return (
@@ -46,7 +59,7 @@ const Services = () => {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
             <motion.div
               key={index}
@@ -73,6 +86,23 @@ const Services = () => {
             </motion.div>
           ))}
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          viewport={{ once: true }}
+          className="text-center mt-12"
+        >
+          <Button
+            size="lg"
+            onClick={() => window.open('https://calendly.com/rohitsundaram-95/30min', '_blank')}
+            className="gradient-primary text-primary-foreground text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all"
+          >
+            Book a Free 15-min AI Strategy Call
+            <ArrowRight className="ml-2 w-5 h-5" />
+          </Button>
+        </motion.div>
       </div>
     </section>
   );

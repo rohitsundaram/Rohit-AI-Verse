@@ -1,11 +1,14 @@
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 
 const Footer = () => {
   const links = [
     { label: 'About', href: '#about' },
     { label: 'Services', href: '#services' },
+    { label: 'Demos', href: '#demos' },
+    { label: 'Case Studies', href: '#case-studies' },
+    { label: 'Pricing', href: '#pricing' },
     { label: 'Work', href: '#work' },
-    { label: 'Process', href: '#process' },
     { label: 'Contact', href: '#contact' },
   ];
 
@@ -57,9 +60,17 @@ const Footer = () => {
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className="text-sm text-muted-foreground"
+            className="flex flex-col items-center gap-4"
           >
-            © 2025 Rohit Sundaram. All rights reserved.
+            <Button
+              onClick={() => window.open('https://calendly.com/rohitsundaram-95/30min', '_blank')}
+              className="gradient-primary text-primary-foreground"
+            >
+              Book a Free 15-min AI Strategy Call
+            </Button>
+            <p className="text-sm text-muted-foreground">
+              © 2025 Rohit Sundaram. All rights reserved.
+            </p>
           </motion.div>
         </div>
       </div>

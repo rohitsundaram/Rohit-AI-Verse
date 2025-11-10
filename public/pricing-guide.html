@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services & Pricing Guide - Rohit Sundaram</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #fff;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #3b82f6;
+        }
+        .header h1 {
+            color: #1e40af;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .header .subtitle {
+            color: #64748b;
+            font-size: 18px;
+        }
+        .tier {
+            margin-bottom: 40px;
+            padding: 30px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: #f9fafb;
+        }
+        .tier.popular {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+        }
+        .tier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .tier-header h2 {
+            color: #1e40af;
+            font-size: 28px;
+        }
+        .tier-header .price {
+            font-size: 32px;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .tier .description {
+            color: #64748b;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        .tier .best-for {
+            background: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #64748b;
+            border-left: 4px solid #3b82f6;
+        }
+        .features {
+            margin: 20px 0;
+        }
+        .features h3 {
+            color: #1e40af;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+        .features ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .features li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            font-size: 15px;
+        }
+        .features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .addons {
+            margin: 40px 0;
+            padding: 25px;
+            background: #f9fafb;
+            border-radius: 12px;
+        }
+        .addons h2 {
+            color: #1e40af;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .addon-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background: white;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+        .addon-name {
+            font-weight: 600;
+            color: #1e40af;
+        }
+        .addon-price {
+            color: #3b82f6;
+            font-weight: bold;
+        }
+        .timeline {
+            margin: 30px 0;
+            padding: 20px;
+            background: #eff6ff;
+            border-radius: 8px;
+        }
+        .timeline h3 {
+            color: #1e40af;
+            margin-bottom: 15px;
+        }
+        .timeline-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #bfdbfe;
+        }
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+        .footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 3px solid #e5e7eb;
+            text-align: center;
+            color: #64748b;
+        }
+        .footer h3 {
+            color: #1e40af;
+            margin-bottom: 15px;
+        }
+        .footer a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .badge {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        @media print {
+            body {
+                padding: 20px;
+            }
+            .tier {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Services & Pricing Guide</h1>
+        <div class="subtitle">Rohit Sundaram - Dubai-based Gen AI Engineer</div>
+        <div class="subtitle" style="margin-top: 10px; font-size: 14px;">Helping startups build RAG chatbots, AI assistants, and automate workflows</div>
+    </div>
+
+    <div class="tier">
+        <div class="tier-header">
+            <h2>Chatbot</h2>
+            <div class="price">Starting at $2,500</div>
+        </div>
+        <p class="description">Perfect for customer support and basic automation</p>
+        <div class="best-for"><strong>Best for:</strong> Small businesses, startups, customer support teams</div>
+        <div class="features">
+            <h3>What's Included:</h3>
+            <ul>
+                <li>Custom conversational AI chatbot</li>
+                <li>Integration with your platform (web, WhatsApp, etc.)</li>
+                <li>Basic knowledge base setup</li>
+                <li>Multi-language support</li>
+                <li>Analytics dashboard</li>
+                <li>2 weeks implementation</li>
+                <li>1 month support included</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="tier popular">
+        <div class="tier-header">
+            <h2>RAG System <span class="badge">Most Popular</span></h2>
+            <div class="price">Starting at $5,000</div>
+        </div>
+        <p class="description">Advanced document Q&A and knowledge retrieval</p>
+        <div class="best-for"><strong>Best for:</strong> Companies with large document repositories, legal/healthcare</div>
+        <div class="features">
+            <h3>What's Included:</h3>
+            <ul>
+                <li>Everything in Chatbot tier</li>
+                <li>Custom RAG architecture</li>
+                <li>Vector database setup (PGVector)</li>
+                <li>Document processing pipeline</li>
+                <li>Semantic search capabilities</li>
+                <li>Source citation and references</li>
+                <li>Custom embeddings optimization</li>
+                <li>4-6 weeks implementation</li>
+                <li>2 months support included</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="tier">
+        <div class="tier-header">
+            <h2>Full Optimization</h2>
+            <div class="price">Starting at $10,000</div>
+        </div>
+        <p class="description">Complete AI system with optimization and scaling</p>
+        <div class="best-for"><strong>Best for:</strong> Enterprise clients, high-traffic applications, production systems</div>
+        <div class="features">
+            <h3>What's Included:</h3>
+            <ul>
+                <li>Everything in RAG System tier</li>
+                <li>Model optimization (OpenVINO, quantization)</li>
+                <li>Multi-agent orchestration (CrewAI)</li>
+                <li>Workflow automation</li>
+                <li>Performance tuning (latency, cost)</li>
+                <li>Scalable cloud deployment (AWS ECS)</li>
+                <li>CI/CD pipeline setup</li>
+                <li>Monitoring and observability</li>
+                <li>6-8 weeks implementation</li>
+                <li>3 months support included</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="addons">
+        <h2>Add-Ons</h2>
+        <div class="addon-item">
+            <div>
+                <div class="addon-name">Additional Support</div>
+                <div style="font-size: 14px; color: #64748b; margin-top: 4px;">Extended support and maintenance</div>
+            </div>
+            <div class="addon-price">$500/month</div>
+        </div>
+        <div class="addon-item">
+            <div>
+                <div class="addon-name">Custom Integrations</div>
+                <div style="font-size: 14px; color: #64748b; margin-top: 4px;">Integrate with your existing tools and systems</div>
+            </div>
+            <div class="addon-price">Custom</div>
+        </div>
+        <div class="addon-item">
+            <div>
+                <div class="addon-name">Training & Documentation</div>
+                <div style="font-size: 14px; color: #64748b; margin-top: 4px;">Team training and comprehensive documentation</div>
+            </div>
+            <div class="addon-price">$1,000</div>
+        </div>
+    </div>
+
+    <div class="timeline">
+        <h3>Implementation Timeline</h3>
+        <div class="timeline-item">
+            <span><strong>Chatbot:</strong></span>
+            <span>2 weeks</span>
+        </div>
+        <div class="timeline-item">
+            <span><strong>RAG System:</strong></span>
+            <span>4-6 weeks</span>
+        </div>
+        <div class="timeline-item">
+            <span><strong>Full Optimization:</strong></span>
+            <span>6-8 weeks</span>
+        </div>
+    </div>
+
+    <div class="footer">
+        <h3>Next Steps</h3>
+        <p style="margin: 15px 0;">All projects include a <strong>free 15-minute strategy call</strong> to discuss your needs</p>
+        <p style="margin: 10px 0;">Schedule your call: <a href="https://calendly.com/rohitsundaram-95/30min">calendly.com/rohitsundaram-95/30min</a></p>
+        <p style="margin-top: 30px; font-size: 14px;">
+            <strong>Rohit Sundaram</strong><br>
+            Website: <a href="https://rohitsundaram.com">rohitsundaram.com</a><br>
+            Email: rohitsundaram.95@gmail.com
+        </p>
+    </div>
+</body>
+</html>
+
