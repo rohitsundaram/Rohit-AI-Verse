@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import Chatbot from '@/components/Chatbot';
 import { useBlogPosts } from '@/hooks/useBlog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -184,7 +183,6 @@ const Blog = () => {
         </section>
       </main>
       <Footer />
-      <Chatbot />
     </div>
   );
 };

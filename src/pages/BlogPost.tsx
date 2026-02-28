@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import Chatbot from '@/components/Chatbot';
 import { useBlogPostBySlug, useBlogPostPreviewBySlug, useBlogPosts } from '@/hooks/useBlog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -156,7 +155,6 @@ const BlogPost = () => {
         </section>
       </main>
       <Footer />
-      <Chatbot />
     </div>
   );
 };
