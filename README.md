@@ -43,6 +43,29 @@ npm run dev
 
 The app will be available at `http://localhost:8080`
 
+### Environment Variables
+
+Create a `.env` file in the project root and add:
+
+```sh
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+These values power the blog + private editor routes:
+- `http://localhost:8080/blog`
+- `http://localhost:8080/blog/:slug`
+- `http://localhost:8080/admin/login`
+- `http://localhost:8080/admin/blog`
+
+### Supabase Blog Setup
+
+1. Create a Supabase project.
+2. Open the SQL Editor and run [`docs/supabase-blog.sql`](docs/supabase-blog.sql).
+3. In Authentication settings, enable magic-link login for your email.
+4. Add your project URL + anon key to `.env`.
+5. Start the app and sign in at `/admin/login` to create drafts, use the block editor with rich formatting + image upload, preview, and publish.
+
 ## 🌐 Live Demo
 
 Portfolio: https://rohitsundaram.com

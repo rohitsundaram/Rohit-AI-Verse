@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const menuItems = [
     { label: 'About', href: '#about' },
@@ -14,6 +17,7 @@ const Navbar = () => {
     { label: 'Case Studies', href: '#case-studies' },
     { label: 'Pricing', href: '#pricing' },
     { label: 'Work', href: '#work' },
+    { label: 'Blog', href: '/blog' },
     { label: 'Contact', href: '#contact' },
   ];
 
@@ -33,6 +37,32 @@ const Navbar = () => {
     }
   };
 
+  useEffect(() => {
+    if (location.pathname === '/' && location.hash) {
+      const timer = setTimeout(() => {
+        scrollToSection(location.hash);
+      }, 80);
+
+      return () => clearTimeout(timer);
+    }
+  }, [location.pathname, location.hash]);
+
+  const handleMenuClick = (href: string) => {
+    if (href.startsWith('/')) {
+      navigate(href);
+      setIsMobileMenuOpen(false);
+      return;
+    }
+
+    if (location.pathname === '/') {
+      scrollToSection(href);
+      return;
+    }
+
+    navigate({ pathname: '/', hash: href });
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -44,20 +74,21 @@ const Navbar = () => {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <motion.a
-            href="#"
+          <motion.div
             className="text-2xl font-bold gradient-text"
             whileHover={{ scale: 1.05 }}
           >
-            Rohit Sundaram
-          </motion.a>
+            <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
+              Rohit Sundaram
+            </Link>
+          </motion.div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
             {menuItems.map((item) => (
               <button
                 key={item.label}
-                onClick={() => scrollToSection(item.href)}
+                onClick={() => handleMenuClick(item.href)}
                 className="text-foreground/80 hover:text-primary transition-colors font-medium"
               >
                 {item.label}
@@ -92,7 +123,7 @@ const Navbar = () => {
               {menuItems.map((item) => (
                 <button
                   key={item.label}
-                  onClick={() => scrollToSection(item.href)}
+                  onClick={() => handleMenuClick(item.href)}
                   className="block w-full text-left text-foreground/80 hover:text-primary transition-colors font-medium py-2"
                 >
                   {item.label}
