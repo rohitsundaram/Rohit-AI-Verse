@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getPostById,
+  getPostBySlugForPreview,
   getPublishedPostBySlug,
   listAdminPosts,
   listPublishedPosts,
@@ -21,6 +22,13 @@ export const useBlogPostBySlug = (slug?: string) =>
   useQuery({
     queryKey: ['blog-post', slug],
     queryFn: () => getPublishedPostBySlug(slug || ''),
+    enabled: Boolean(slug),
+  });
+
+export const useBlogPostPreviewBySlug = (slug?: string) =>
+  useQuery({
+    queryKey: ['blog-post-preview', slug],
+    queryFn: () => getPostBySlugForPreview(slug || ''),
     enabled: Boolean(slug),
   });
 

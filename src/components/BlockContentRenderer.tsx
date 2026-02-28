@@ -4,9 +4,56 @@ interface BlockContentRendererProps {
   content: BlogContent;
 }
 
-const asString = (value: unknown) => (typeof value === 'string' ? value : '');
+const normalizeText = (value: string) => value.replace(/&nbsp;/g, ' ').replace(/\u00a0/g, ' ');
 
-const asStringArray = (value: unknown) => (Array.isArray(value) ? value.map((item) => (typeof item === 'string' ? item : '')).filter(Boolean) : []);
+const asString = (value: unknown) => (typeof value === 'string' ? normalizeText(value) : '');
+
+type ListNode = {
+  text: string;
+  children: ListNode[];
+};
+
+const parseListNodes = (value: unknown): ListNode[] => {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((item) => {
+      if (typeof item === 'string') {
+        return { text: item, children: [] } as ListNode;
+      }
+
+      if (item && typeof item === 'object') {
+        const raw = item as { content?: unknown; text?: unknown; items?: unknown };
+        const text = asString(raw.content) || asString(raw.text);
+        const children = parseListNodes(raw.items);
+
+        if (text || children.length > 0) {
+          return { text, children } as ListNode;
+        }
+      }
+
+      return null;
+    })
+    .filter((node): node is ListNode => Boolean(node));
+};
+
+const renderListNodes = (nodes: ListNode[], ordered: boolean, keyPrefix: string) => {
+  const ListTag = ordered ? 'ol' : 'ul';
+  const className = ordered ? 'ml-7 list-decimal text-foreground/90 space-y-2' : 'ml-7 list-disc text-foreground/90 space-y-2';
+
+  return (
+    <ListTag className={className}>
+      {nodes.map((node, index) => (
+        <li key={`${keyPrefix}-${index}`}>
+          {node.text}
+          {node.children.length > 0 ? renderListNodes(node.children, ordered, `${keyPrefix}-${index}-child`) : null}
+        </li>
+      ))}
+    </ListTag>
+  );
+};
 
 const BlockContentRenderer = ({ content }: BlockContentRendererProps) => (
   <div className="blog-article space-y-6 text-foreground">
@@ -29,18 +76,11 @@ const BlockContentRenderer = ({ content }: BlockContentRendererProps) => (
       }
 
       if (block.type === 'list') {
-        const items = asStringArray(block.data.items);
+        const items = parseListNodes(block.data.items);
         const style = asString(block.data.style);
-        const className = style === 'ordered' ? 'ml-7 list-decimal text-foreground/90 space-y-2' : 'ml-7 list-disc text-foreground/90 space-y-2';
-        const ListTag = style === 'ordered' ? 'ol' : 'ul';
+        const ordered = style === 'ordered';
 
-        return (
-          <ListTag key={key} className={className}>
-            {items.map((item, itemIndex) => (
-              <li key={`${key}-item-${itemIndex}`}>{item}</li>
-            ))}
-          </ListTag>
-        );
+        return <div key={key}>{renderListNodes(items, ordered, key)}</div>;
       }
 
       if (block.type === 'quote') {

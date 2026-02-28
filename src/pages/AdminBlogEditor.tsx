@@ -121,17 +121,7 @@ const AdminBlogEditor = () => {
     setStatusMessage('');
 
     try {
-      const saved = await saveDraft.mutateAsync({
-        id: selectedPostId || undefined,
-        title: form.title,
-        slug: form.slug,
-        excerpt: form.excerpt,
-        publishedAt: form.publishDate || null,
-        coverImage: form.coverImage,
-        tags: [form.category, ...parseTags(form.tagsText).filter((tag) => tag !== form.category)],
-        content: blocksToPlainText(form.contentBlocks),
-        contentBlocks: form.contentBlocks,
-      });
+      const saved = await saveDraft.mutateAsync(buildDraftPayload());
 
       setSelectedPostId(saved.id);
       setStatusMessage('Draft saved.');
@@ -140,6 +130,18 @@ const AdminBlogEditor = () => {
       setActionError(err instanceof Error ? err.message : 'Failed to save draft.');
     }
   };
+
+  const buildDraftPayload = () => ({
+    id: selectedPostId || undefined,
+    title: form.title,
+    slug: form.slug,
+    excerpt: form.excerpt,
+    publishedAt: form.publishDate || null,
+    coverImage: form.coverImage,
+    tags: [form.category, ...parseTags(form.tagsText).filter((tag) => tag !== form.category)],
+    content: blocksToPlainText(form.contentBlocks),
+    contentBlocks: form.contentBlocks,
+  });
 
   const handlePublish = async () => {
     if (!selectedPostId) {
@@ -230,6 +232,21 @@ const AdminBlogEditor = () => {
     setNewCategory('');
     setStatusMessage(`Category "${normalized}" added.`);
     setActionError('');
+  };
+
+  const handlePreviewExactPage = async () => {
+    setActionError('');
+    setStatusMessage('');
+
+    try {
+      const saved = await saveDraft.mutateAsync(buildDraftPayload());
+      setSelectedPostId(saved.id);
+      setStatusMessage('Draft saved. Opening exact page preview...');
+      window.open(`/blog/${saved.slug}?preview=1`, '_blank');
+      await refetch();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Failed to open preview.');
+    }
   };
 
   return (
@@ -365,6 +382,9 @@ const AdminBlogEditor = () => {
                 <div className="flex flex-wrap gap-3">
                   <Button onClick={handleSaveDraft} disabled={saveDraft.isPending}>
                     {saveDraft.isPending ? 'Saving...' : 'Save Draft'}
+                  </Button>
+                  <Button onClick={handlePreviewExactPage} disabled={saveDraft.isPending} variant="outline">
+                    Preview Exact Page
                   </Button>
                   <Button onClick={handlePublish} disabled={publish.isPending || !selectedPostId} className="gradient-primary text-primary-foreground">
                     {publish.isPending ? 'Publishing...' : 'Publish'}

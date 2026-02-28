@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Chatbot from '@/components/Chatbot';
-import { useBlogPostBySlug, useBlogPosts } from '@/hooks/useBlog';
+import { useBlogPostBySlug, useBlogPostPreviewBySlug, useBlogPosts } from '@/hooks/useBlog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import BlockContentRenderer from '@/components/BlockContentRenderer';
 
 const BLOG_AUTHOR_NAME = 'Rohit Sundaram';
@@ -30,7 +30,12 @@ const formatDate = (value?: string) => {
 
 const BlogPost = () => {
   const { slug } = useParams();
-  const { data: post, isLoading, isError, error, refetch } = useBlogPostBySlug(slug);
+  const [searchParams] = useSearchParams();
+  const isPreviewMode = searchParams.get('preview') === '1';
+  const publishedQuery = useBlogPostBySlug(slug);
+  const previewQuery = useBlogPostPreviewBySlug(isPreviewMode ? slug : undefined);
+  const activeQuery = isPreviewMode ? previewQuery : publishedQuery;
+  const { data: post, isLoading, isError, error, refetch } = activeQuery;
   const { data: allPosts = [] } = useBlogPosts();
   const relatedPosts = allPosts.filter((item) => item.slug !== slug).slice(0, 3);
 
@@ -43,6 +48,14 @@ const BlogPost = () => {
             <Link to="/blog" className="inline-flex items-center text-primary font-medium hover:underline mb-8">
               ← Back to blog
             </Link>
+
+            {isPreviewMode && (
+              <Card className="mb-6 border-primary/40 bg-primary/5">
+                <CardContent className="p-4 text-sm">
+                  Preview mode: this page shows draft content and is visible only to logged-in admin users.
+                </CardContent>
+              </Card>
+            )}
 
             {isLoading && (
               <Card className="p-8 animate-pulse">
@@ -118,11 +131,20 @@ const BlogPost = () => {
                         <Link
                           key={relatedPost.id}
                           to={`/blog/${relatedPost.slug}`}
-                          className="rounded-xl border border-border p-5 hover:border-primary/40 transition-colors"
+                          className="rounded-xl border border-border overflow-hidden hover:border-primary/40 transition-colors"
                         >
-                          <p className="text-sm text-muted-foreground mb-2">{formatDate(relatedPost.publishedAt)}</p>
-                          <h3 className="text-lg font-semibold leading-snug mb-2">{relatedPost.title}</h3>
-                          <p className="text-sm text-muted-foreground line-clamp-3">{relatedPost.excerpt}</p>
+                          {relatedPost.coverImage && (
+                            <img
+                              src={relatedPost.coverImage}
+                              alt={relatedPost.title}
+                              className="w-full aspect-[16/9] object-cover"
+                            />
+                          )}
+                          <div className="p-5">
+                            <p className="text-sm text-muted-foreground mb-2">{formatDate(relatedPost.publishedAt)}</p>
+                            <h3 className="text-lg font-semibold leading-snug mb-2">{relatedPost.title}</h3>
+                            <p className="text-sm text-muted-foreground line-clamp-3">{relatedPost.excerpt}</p>
+                          </div>
                         </Link>
                       ))}
                     </div>

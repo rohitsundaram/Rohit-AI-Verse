@@ -134,6 +134,21 @@ export const getPublishedPostBySlug = async (slug: string): Promise<BlogPost | n
   return data ? mapPost(data as PostRow) : null;
 };
 
+export const getPostBySlugForPreview = async (slug: string): Promise<BlogPost | null> => {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('slug', slug)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message || 'Failed to fetch preview post.');
+  }
+
+  return data ? mapPost(data as PostRow) : null;
+};
+
 export const listAdminPosts = async (): Promise<BlogPost[]> => {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase.from('posts').select('*').order('updated_at', { ascending: false });
