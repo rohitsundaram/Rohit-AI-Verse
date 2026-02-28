@@ -4,12 +4,22 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MessageCircle, X, Send, Calendar } from 'lucide-react';
+import { getSupabaseClient } from '@/lib/supabase';
 
 interface Message {
   id: string;
   text: string;
   sender: 'user' | 'bot';
   timestamp: Date;
+}
+
+interface BlogKnowledgePost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  tags: string[] | null;
+  published_at: string | null;
 }
 
 const Chatbot = () => {
@@ -26,6 +36,8 @@ const Chatbot = () => {
   const [input, setInput] = useState('');
   const [showScheduleForm, setShowScheduleForm] = useState(false);
   const [isSubmittingMeeting, setIsSubmittingMeeting] = useState(false);
+  const [blogPosts, setBlogPosts] = useState<BlogKnowledgePost[]>([]);
+  const [isBlogLoading, setIsBlogLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -112,6 +124,45 @@ const Chatbot = () => {
     }, 5000);
 
     return () => clearTimeout(timer);
+  }, []);
+
+  // Load published blog posts so chatbot can answer with latest content
+  useEffect(() => {
+    let isActive = true;
+
+    const loadBlogPosts = async () => {
+      setIsBlogLoading(true);
+
+      try {
+        const supabase = getSupabaseClient();
+        const { data, error } = await supabase
+          .from('posts')
+          .select('id, title, slug, excerpt, tags, published_at')
+          .eq('status', 'published')
+          .order('published_at', { ascending: false, nullsFirst: false })
+          .limit(20);
+
+        if (error) {
+          throw new Error(error.message || 'Failed to load blog posts.');
+        }
+
+        if (isActive) {
+          setBlogPosts((data || []) as BlogKnowledgePost[]);
+        }
+      } catch (error) {
+        console.log('Could not load blog knowledge:', error);
+      } finally {
+        if (isActive) {
+          setIsBlogLoading(false);
+        }
+      }
+    };
+
+    void loadBlogPosts();
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
   // Play sound when button expands
@@ -223,6 +274,35 @@ const Chatbot = () => {
     );
   };
 
+  const findBlogPost = (query: string) => {
+    const lowerQuery = query.toLowerCase();
+    return blogPosts.find((post) => {
+      const tags = (post.tags || []).join(' ').toLowerCase();
+      return (
+        post.title.toLowerCase().includes(lowerQuery) ||
+        post.excerpt.toLowerCase().includes(lowerQuery) ||
+        tags.includes(lowerQuery)
+      );
+    });
+  };
+
+  const formatBlogDate = (value: string | null) => {
+    if (!value) {
+      return 'Recently published';
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return 'Recently published';
+    }
+
+    return date.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
   const getBotResponse = (userMessage: string): string => {
     const lowerMessage = userMessage.toLowerCase();
 
@@ -250,6 +330,46 @@ const Chatbot = () => {
       projects.forEach(p => p.skills.forEach(s => allSkills.add(s)));
       const skillsList = Array.from(allSkills).map(s => `• ${s}`).join('\n');
       return `Based on Rohit's projects, here are his key skills and expertise:\n\n${skillsList}\n\nWould you like to know more about a specific technology or see examples from his projects?`;
+    }
+
+    // Blog and article queries
+    if (
+      lowerMessage.includes('blog') ||
+      lowerMessage.includes('article') ||
+      lowerMessage.includes('latest post') ||
+      lowerMessage.includes('latest blog') ||
+      lowerMessage.includes('writeup')
+    ) {
+      if (isBlogLoading) {
+        return "I'm loading the latest blog posts. Please ask again in a moment.";
+      }
+
+      if (blogPosts.length === 0) {
+        return "I couldn't find published blog posts yet. Once a post is published, I can summarize it and share direct links.";
+      }
+
+      const matchedPost = findBlogPost(userMessage);
+      if (matchedPost) {
+        const category = matchedPost.tags?.[0] || 'General';
+        return `Here is a relevant blog post:\n\n• ${matchedPost.title}\n• Category: ${category}\n• Published: ${formatBlogDate(matchedPost.published_at)}\n• Summary: ${matchedPost.excerpt}\n• Link: ${window.location.origin}/blog/${matchedPost.slug}\n\nWant more posts in this category?`;
+      }
+
+      const latestPosts = blogPosts.slice(0, 5);
+      const postList = latestPosts
+        .map((post) => `• ${post.title} (${formatBlogDate(post.published_at)})\n  ${window.location.origin}/blog/${post.slug}`)
+        .join('\n\n');
+      return `Here are the latest blog posts:\n\n${postList}\n\nYou can ask for a category like "show case studies posts" or mention a topic to get specific recommendations.`;
+    }
+
+    // Blog category queries
+    if (lowerMessage.includes('category') || lowerMessage.includes('categories')) {
+      if (blogPosts.length === 0) {
+        return "There are no published blog categories yet.";
+      }
+
+      const categories = Array.from(new Set(blogPosts.map((post) => post.tags?.[0]).filter(Boolean))) as string[];
+      const categoryList = categories.map((category) => `• ${category}`).join('\n');
+      return `Current blog categories are:\n\n${categoryList}\n\nAsk me for a category and I'll suggest matching posts.`;
     }
 
     // Architecture or technical deep dive
@@ -323,7 +443,7 @@ const Chatbot = () => {
 
     // Help
     if (lowerMessage.includes('help') || lowerMessage.includes('what can you')) {
-      return "I can help you with:\n\n• Learn about Rohit's services and expertise\n• Get detailed information about projects (architecture, tech stack, features)\n• View GitHub repository links\n• Understand Rohit's skills and technologies\n• Schedule a meeting\n• Answer technical questions about AI engineering\n\nTry asking:\n• 'Tell me about the Dental SaaS Chatbot'\n• 'What skills does Rohit have?'\n• 'Show me the GitHub repos'\n• 'What's the architecture of the RAG project?'\n\nWhat would you like to know?";
+      return "I can help you with:\n\n• Learn about Rohit's services and expertise\n• Get detailed information about projects (architecture, tech stack, features)\n• View GitHub repository links\n• Understand Rohit's skills and technologies\n• Explore latest blog posts and categories\n• Schedule a meeting\n• Answer technical questions about AI engineering\n\nTry asking:\n• 'Show me latest blog posts'\n• 'Any case studies in the blog?'\n• 'Tell me about the Dental SaaS Chatbot'\n• 'What skills does Rohit have?'\n• 'Show me the GitHub repos'\n\nWhat would you like to know?";
     }
 
     // Docker, LangChain, Next.js specific tech questions
@@ -625,7 +745,7 @@ const Chatbot = () => {
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground mt-2 text-center">
-                Try: "Tell me about Dental SaaS Chatbot" | "What are Rohit's skills?" | "Show GitHub repos"
+                Try: "Show latest blog posts" | "Tell me about Dental SaaS Chatbot" | "Show GitHub repos"
               </p>
             </div>
           </motion.div>

@@ -4,10 +4,8 @@ import { Button } from '@/components/ui/button';
 const Footer = () => {
   const links = [
     { label: 'About', href: '#about' },
-    { label: 'Services', href: '#services' },
     { label: 'Demos', href: '#demos' },
     { label: 'Case Studies', href: '#case-studies' },
-    { label: 'Pricing', href: '#pricing' },
     { label: 'Work', href: '#work' },
     { label: 'Contact', href: '#contact' },
   ];
