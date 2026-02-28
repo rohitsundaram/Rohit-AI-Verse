@@ -2,6 +2,7 @@
 
 A modern portfolio website showcasing AI engineering expertise, services, and projects. Built with React, TypeScript, and Tailwind CSS.
 
+
 ## Why This Project Matters
 
 This repository is the public entry point to my AI engineering work. It highlights production projects, consulting services, and technical depth in a format that is easy for recruiters and clients to evaluate quickly.
