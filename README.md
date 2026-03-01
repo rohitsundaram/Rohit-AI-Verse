@@ -51,6 +51,11 @@ Create a `.env` file in the project root and add:
 ```sh
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+# Optional (recommended for Vercel server routes)
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+# Optional for elevated server-side reads/writes:
+# SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
 
 These values power the blog + private editor routes:

@@ -108,30 +108,25 @@ const resolveCategoryId = async (categoryNameFromInput?: string) => {
 };
 
 export const listPublishedPosts = async (): Promise<BlogPost[]> => {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from('posts')
-    .select('*')
-    .eq('status', 'published')
-    .order('published_at', { ascending: false, nullsFirst: false });
+  const response = await fetch('/api/blog/posts');
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(`Failed to load blog posts. ${detail}`);
+  }
 
-  return assertData(data, error).map((row) => mapPost(row as PostRow));
+  const rows = (await response.json()) as PostRow[];
+  return rows.map((row) => mapPost(row));
 };
 
 export const getPublishedPostBySlug = async (slug: string): Promise<BlogPost | null> => {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from('posts')
-    .select('*')
-    .eq('slug', slug)
-    .eq('status', 'published')
-    .maybeSingle();
-
-  if (error) {
-    throw new Error(error.message || 'Failed to fetch blog post.');
+  const response = await fetch(`/api/blog/post?slug=${encodeURIComponent(slug)}`);
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(`Failed to fetch blog post. ${detail}`);
   }
 
-  return data ? mapPost(data as PostRow) : null;
+  const row = (await response.json()) as PostRow | null;
+  return row ? mapPost(row) : null;
 };
 
 export const getPostBySlugForPreview = async (slug: string): Promise<BlogPost | null> => {
