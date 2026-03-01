@@ -17,24 +17,32 @@ type PostRow = {
   updated_at: string;
 };
 
-const mapPost = (row: PostRow): BlogPost => ({
+const mapPost = (row: PostRow): BlogPost => {
+  const normalizedContentBlocks = isValidBlogContent(row.content_blocks)
+    ? row.content_blocks
+    : row.content
+      ? markdownToBlocks(row.content)
+      : emptyBlogContent();
+
+  const firstContentImage = normalizedContentBlocks.blocks.find((block) => block.type === 'image');
+  const imageFile = firstContentImage?.data?.file as { url?: unknown } | undefined;
+  const imageFromBlocks = typeof imageFile?.url === 'string' ? imageFile.url : null;
+
+  return {
   id: row.id,
   title: row.title,
   slug: row.slug,
   excerpt: row.excerpt,
   content: row.content,
-  contentBlocks: isValidBlogContent(row.content_blocks)
-    ? row.content_blocks
-    : row.content
-      ? markdownToBlocks(row.content)
-      : emptyBlogContent(),
+  contentBlocks: normalizedContentBlocks,
   status: row.status,
   publishedAt: row.published_at,
-  coverImage: row.cover_image,
+  coverImage: row.cover_image || imageFromBlocks,
   tags: row.tags ?? [],
   createdAt: row.created_at,
   updatedAt: row.updated_at,
-});
+  };
+};
 
 const assertData = <T>(data: T | null, error: { message?: string } | null) => {
   if (error) {
