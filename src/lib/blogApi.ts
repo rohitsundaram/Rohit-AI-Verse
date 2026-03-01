@@ -1,6 +1,7 @@
 import type { BlogPost, BlogPostInput } from '@/types/blog';
 import { getSupabaseClient } from '@/lib/supabase';
 import { emptyBlogContent, isValidBlogContent, markdownToBlocks } from '@/lib/blockContent';
+import { toRenderableImageUrl } from '@/lib/imageUrl';
 
 type PostRow = {
   id: string;
@@ -37,7 +38,7 @@ const mapPost = (row: PostRow): BlogPost => {
   contentBlocks: normalizedContentBlocks,
   status: row.status,
   publishedAt: row.published_at,
-  coverImage: row.cover_image || imageFromBlocks,
+  coverImage: toRenderableImageUrl(row.cover_image || imageFromBlocks),
   tags: row.tags ?? [],
   createdAt: row.created_at,
   updatedAt: row.updated_at,

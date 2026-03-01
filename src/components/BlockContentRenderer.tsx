@@ -1,4 +1,5 @@
 import type { BlogContent } from '@/types/blog';
+import { toRenderableImageUrl } from '@/lib/imageUrl';
 
 interface BlockContentRendererProps {
   content: BlogContent;
@@ -101,7 +102,7 @@ const BlockContentRenderer = ({ content }: BlockContentRendererProps) => (
 
       if (block.type === 'image') {
         const file = block.data.file as { url?: string } | undefined;
-        const url = typeof file?.url === 'string' ? file.url : '';
+        const url = typeof file?.url === 'string' ? toRenderableImageUrl(file.url) : '';
         const caption = asString(block.data.caption);
 
         if (!url) {

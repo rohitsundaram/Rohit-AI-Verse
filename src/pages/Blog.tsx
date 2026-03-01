@@ -123,11 +123,15 @@ const Blog = () => {
               <Card className="overflow-hidden border">
                 <div className="grid lg:grid-cols-2 gap-0">
                   <Link to={`/blog/${featuredPost.slug}`} className="block">
-                    <img
-                      src={featuredPost.coverImage || ''}
-                      alt={featuredPost.title}
-                      className="w-full h-full min-h-[280px] object-cover"
-                    />
+                    {featuredPost.coverImage ? (
+                      <img
+                        src={featuredPost.coverImage}
+                        alt={featuredPost.title}
+                        className="w-full h-full min-h-[280px] object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full min-h-[280px] bg-muted" />
+                    )}
                   </Link>
                   <div className="p-6 lg:p-8 flex flex-col justify-between">
                     <div className="space-y-4">
