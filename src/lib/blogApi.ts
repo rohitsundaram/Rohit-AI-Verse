@@ -108,25 +108,48 @@ const resolveCategoryId = async (categoryNameFromInput?: string) => {
 };
 
 export const listPublishedPosts = async (): Promise<BlogPost[]> => {
-  const response = await fetch('/api/blog/posts');
-  if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(`Failed to load blog posts. ${detail}`);
+  const tryApiResponse = await fetch('/api/blog/posts');
+  const contentType = tryApiResponse.headers.get('content-type') || '';
+
+  if (tryApiResponse.ok && contentType.includes('application/json')) {
+    const rows = (await tryApiResponse.json()) as PostRow[];
+    return rows.map((row) => mapPost(row));
   }
 
-  const rows = (await response.json()) as PostRow[];
-  return rows.map((row) => mapPost(row));
+  // Local Vite dev can serve /api/* files as JS source.
+  // Fall back to direct Supabase browser query in that case.
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('status', 'published')
+    .order('published_at', { ascending: false, nullsFirst: false });
+
+  return assertData(data, error).map((row) => mapPost(row as PostRow));
 };
 
 export const getPublishedPostBySlug = async (slug: string): Promise<BlogPost | null> => {
-  const response = await fetch(`/api/blog/post?slug=${encodeURIComponent(slug)}`);
-  if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(`Failed to fetch blog post. ${detail}`);
+  const tryApiResponse = await fetch(`/api/blog/post?slug=${encodeURIComponent(slug)}`);
+  const contentType = tryApiResponse.headers.get('content-type') || '';
+
+  if (tryApiResponse.ok && contentType.includes('application/json')) {
+    const row = (await tryApiResponse.json()) as PostRow | null;
+    return row ? mapPost(row) : null;
   }
 
-  const row = (await response.json()) as PostRow | null;
-  return row ? mapPost(row) : null;
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message || 'Failed to fetch blog post.');
+  }
+
+  return data ? mapPost(data as PostRow) : null;
 };
 
 export const getPostBySlugForPreview = async (slug: string): Promise<BlogPost | null> => {
