@@ -6,7 +6,9 @@ import { useBlogPostBySlug, useBlogPostPreviewBySlug, useBlogPosts } from '@/hoo
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import MarkdownArticle from '@/components/MarkdownArticle';
 import BlockContentRenderer from '@/components/BlockContentRenderer';
+import { hasMarkdownModeMarker, stripMarkdownModeMarker } from '@/lib/markdownMode';
 
 const BLOG_AUTHOR_NAME = 'Rohit Sundaram';
 
@@ -116,8 +118,12 @@ const BlogPost = () => {
                   <p>{formatDate(post.publishedAt)}</p>
                 </div>
 
-                {post.contentBlocks?.blocks?.length > 0 ? (
-                  <BlockContentRenderer content={post.contentBlocks} />
+                {(post.content?.trim() || post.contentBlocks?.blocks?.length > 0) ? (
+                  hasMarkdownModeMarker(post.content) ? (
+                    <MarkdownArticle markdown={stripMarkdownModeMarker(post.content)} />
+                  ) : (
+                    <BlockContentRenderer content={post.contentBlocks} />
+                  )
                 ) : (
                   <p className="text-muted-foreground">{post.excerpt}</p>
                 )}

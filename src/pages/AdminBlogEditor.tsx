@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAdminBlogPosts, useMigrateMarkdownPosts, usePublishPost, useSaveDraftPost, useUnpublishPost } from '@/hooks/useBlog';
 import { getSupabaseClient } from '@/lib/supabase';
-import BlockContentRenderer from '@/components/BlockContentRenderer';
-import BlockEditor from '@/components/BlockEditor';
-import type { BlogContent } from '@/types/blog';
-import { blocksToPlainText, emptyBlogContent } from '@/lib/blockContent';
+import { blocksToMarkdown, markdownToBlocks } from '@/lib/blockContent';
 import { uploadBlogImage } from '@/lib/blogImages';
+import MarkdownArticle from '@/components/MarkdownArticle';
+import { stripMarkdownModeMarker, withMarkdownModeMarker } from '@/lib/markdownMode';
 
 interface EditorFormState {
   title: string;
@@ -19,7 +19,7 @@ interface EditorFormState {
   category: string;
   coverImage: string;
   tagsText: string;
-  contentBlocks: BlogContent;
+  contentMarkdown: string;
 }
 
 const DEFAULT_BLOG_CATEGORIES = [
@@ -40,7 +40,7 @@ const emptyForm: EditorFormState = {
   category: DEFAULT_BLOG_CATEGORIES[0],
   coverImage: '',
   tagsText: '',
-  contentBlocks: emptyBlogContent(),
+  contentMarkdown: '',
 };
 
 const parseTags = (value: string) =>
@@ -62,9 +62,12 @@ const AdminBlogEditor = () => {
   const [statusMessage, setStatusMessage] = useState('');
   const [actionError, setActionError] = useState('');
   const [isCoverUploading, setIsCoverUploading] = useState(false);
+  const [isInlineImageUploading, setIsInlineImageUploading] = useState(false);
   const [newCategory, setNewCategory] = useState('');
   const [categoryOptions, setCategoryOptions] = useState<string[]>(DEFAULT_BLOG_CATEGORIES);
   const coverInputRef = useRef<HTMLInputElement | null>(null);
+  const inlineImageInputRef = useRef<HTMLInputElement | null>(null);
+  const markdownTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const hasAutoSelectedRef = useRef(false);
 
   const selectedPost = useMemo(
@@ -103,7 +106,9 @@ const AdminBlogEditor = () => {
       category: selectedPost.tags[0] || DEFAULT_BLOG_CATEGORIES[0],
       coverImage: selectedPost.coverImage || '',
       tagsText: selectedPost.tags.filter((tag) => tag !== selectedPost.tags[0]).join(', '),
-      contentBlocks: selectedPost.contentBlocks,
+      contentMarkdown: selectedPost.content?.trim()
+        ? stripMarkdownModeMarker(selectedPost.content)
+        : blocksToMarkdown(selectedPost.contentBlocks),
     });
     setStatusMessage('');
     setActionError('');
@@ -131,17 +136,22 @@ const AdminBlogEditor = () => {
     }
   };
 
-  const buildDraftPayload = () => ({
-    id: selectedPostId || undefined,
-    title: form.title,
-    slug: form.slug,
-    excerpt: form.excerpt,
-    publishedAt: form.publishDate || null,
-    coverImage: form.coverImage,
-    tags: [form.category, ...parseTags(form.tagsText).filter((tag) => tag !== form.category)],
-    content: blocksToPlainText(form.contentBlocks),
-    contentBlocks: form.contentBlocks,
-  });
+  const buildDraftPayload = () => {
+    const normalizedMarkdown = form.contentMarkdown || '';
+    const contentBlocks = markdownToBlocks(normalizedMarkdown);
+
+    return {
+      id: selectedPostId || undefined,
+      title: form.title,
+      slug: form.slug,
+      excerpt: form.excerpt,
+      publishedAt: form.publishDate || null,
+      coverImage: form.coverImage,
+      tags: [form.category, ...parseTags(form.tagsText).filter((tag) => tag !== form.category)],
+      content: withMarkdownModeMarker(normalizedMarkdown),
+      contentBlocks,
+    };
+  };
 
   const handlePublish = async () => {
     if (!selectedPostId) {
@@ -221,6 +231,54 @@ const AdminBlogEditor = () => {
     }
   };
 
+  const insertMarkdownAtCursor = (snippet: string) => {
+    const textArea = markdownTextAreaRef.current;
+    if (!textArea) {
+      setForm((prev) => ({
+        ...prev,
+        contentMarkdown: prev.contentMarkdown ? `${prev.contentMarkdown}\n${snippet}` : snippet,
+      }));
+      return;
+    }
+
+    const start = textArea.selectionStart ?? form.contentMarkdown.length;
+    const end = textArea.selectionEnd ?? form.contentMarkdown.length;
+    const nextValue = `${form.contentMarkdown.slice(0, start)}${snippet}${form.contentMarkdown.slice(end)}`;
+    setForm((prev) => ({ ...prev, contentMarkdown: nextValue }));
+
+    requestAnimationFrame(() => {
+      const nextCursor = start + snippet.length;
+      textArea.focus();
+      textArea.setSelectionRange(nextCursor, nextCursor);
+    });
+  };
+
+  const handleInlineImageUpload = async (file?: File) => {
+    if (!file) {
+      return;
+    }
+
+    setActionError('');
+    setStatusMessage('');
+    setIsInlineImageUploading(true);
+
+    try {
+      const url = await uploadBlogImage(file);
+      const alt = file.name.replace(/\.[^/.]+$/, '');
+      const needsNewline = form.contentMarkdown.trim().length > 0 && !form.contentMarkdown.endsWith('\n');
+      const snippet = `${needsNewline ? '\n' : ''}![${alt}](${url})\n`;
+      insertMarkdownAtCursor(snippet);
+      setStatusMessage('Inline image uploaded and inserted into markdown.');
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Failed to upload inline image.');
+    } finally {
+      setIsInlineImageUploading(false);
+      if (inlineImageInputRef.current) {
+        inlineImageInputRef.current.value = '';
+      }
+    }
+  };
+
   const handleCreateCategory = () => {
     const normalized = newCategory.trim();
     if (!normalized) {
@@ -255,7 +313,7 @@ const AdminBlogEditor = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold">Blog Editor</h1>
-            <p className="text-muted-foreground">Write with the block editor, preview live, then publish when ready.</p>
+            <p className="text-muted-foreground">Write in Markdown, preview live, then publish when ready.</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleMigrateMarkdown} disabled={migrateMarkdown.isPending}>
@@ -367,14 +425,44 @@ const AdminBlogEditor = () => {
                   <Button type="button" variant="outline" onClick={() => coverInputRef.current?.click()} disabled={isCoverUploading}>
                     {isCoverUploading ? 'Uploading cover...' : 'Upload Cover Image From PC'}
                   </Button>
-                  <p className="text-xs text-muted-foreground">For inline article images, use the image block and choose Upload File.</p>
                 </div>
                 <Input
                   placeholder="Tags (comma separated, e.g. FastAPI, PGVector, AWS)"
                   value={form.tagsText}
                   onChange={(event) => setForm((prev) => ({ ...prev, tagsText: event.target.value }))}
                 />
-                <BlockEditor value={form.contentBlocks} onChange={(contentBlocks) => setForm((prev) => ({ ...prev, contentBlocks }))} />
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-sm font-medium">Markdown Content</p>
+                    <div className="flex items-center gap-2">
+                      <input
+                        ref={inlineImageInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(event) => handleInlineImageUpload(event.target.files?.[0])}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => inlineImageInputRef.current?.click()}
+                        disabled={isInlineImageUploading}
+                      >
+                        {isInlineImageUploading ? 'Uploading inline image...' : 'Upload Inline Image'}
+                      </Button>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Use Markdown only. Example: ![alt text](image-url)
+                  </p>
+                  <Textarea
+                    ref={markdownTextAreaRef}
+                    placeholder="Write markdown here..."
+                    value={form.contentMarkdown}
+                    onChange={(event) => setForm((prev) => ({ ...prev, contentMarkdown: event.target.value }))}
+                    className="min-h-[620px] resize-y font-mono"
+                  />
+                </div>
 
                 {actionError && <p className="text-sm text-destructive">{actionError}</p>}
                 {statusMessage && <p className="text-sm text-primary">{statusMessage}</p>}
@@ -405,7 +493,7 @@ const AdminBlogEditor = () => {
                 <h2 className="text-2xl font-bold">{form.title || 'Untitled Draft'}</h2>
                 {form.excerpt && <p className="text-muted-foreground">{form.excerpt}</p>}
                 {form.coverImage && <img src={form.coverImage} alt={form.title || 'Cover'} className="w-full max-h-72 object-cover rounded-lg" />}
-                <BlockContentRenderer content={form.contentBlocks} />
+                <MarkdownArticle markdown={form.contentMarkdown} />
               </CardContent>
             </Card>
           </div>
